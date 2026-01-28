@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieBox - Streaming Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .movie-card:hover img { transform: scale(1.05); }
+    </style>
+</head>
+<body class="text-gray-100">
+
+    <nav class="bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 p-4 border-b border-gray-800">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600 tracking-tighter">MOVIE<span class="text-white">BOX</span></h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-red-500">Beranda</a>
+                <a href="#" class="hover:text-red-500">Film</a>
+                <a href="#" class="hover:text-red-500">Series</a>
+            </div>
+            <div class="relative">
+                <input id="searchInput" type="text" placeholder="Cari film..." 
+                       class="bg-gray-800 border-none rounded-full py-2 px-4 text-sm focus:ring-2 focus:ring-red-500 outline-none w-40 md:w-64 transition-all">
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative h-[60vh] flex items-center justify-center text-center p-6 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-[#0f172a] z-10"></div>
+        <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&q=80&w=2070" 
+             class="absolute inset-0 w-full h-full object-cover opacity-30" alt="Hero background">
+        <div class="relative z-20">
+            <h2 class="text-4xl md:text-6xl font-bold mb-4">Nonton Film Tanpa Batas</h2>
+            <p class="text-gray-400 max-w-lg mx-auto mb-6">Dapatkan akses ke ribuan database film terbaru langsung dari genggaman Anda.</p>
+            <button class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-full font-bold transition">Mulai Sekarang</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-10 px-4">
+        <h3 class="text-xl font-bold mb-6 flex items-center">
+            <span class="w-1 h-6 bg-red-600 mr-3"></span> Sedang Tren
+        </h3>
+        
+        <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div class="animate-pulse bg-gray-800 h-64 rounded-xl"></div>
+            <div class="animate-pulse bg-gray-800 h-64 rounded-xl"></div>
+            <div class="animate-pulse bg-gray-800 h-64 rounded-xl"></div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000'; // Sesuaikan dengan alamat API Python Anda
+
+        async function fetchMovies() {
+            try {
+                // Catatan: Ganti '/trending' dengan endpoint asli dari source code GitHub tersebut
+                const response = await fetch(`${API_URL}/trending`);
+                const data = await response.json();
+                renderMovies(data);
+            } catch (err) {
+                console.error("Gagal memuat film:", err);
+                // Jika API belum jalan, kita tampilkan placeholder pesan
+                document.getElementById('movieGrid').innerHTML = `
+                    <p class="col-span-full text-center text-gray-500 py-10">
+                        Pastikan API Python di GitHub moviebox-api sudah berjalan di ${API_URL}
+                    </p>`;
+            }
+        }
+
+        function renderMovies(movies) {
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = movies.map(movie => `
+                <div class="movie-card group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-xl shadow-lg border border-gray-800">
+                        <img src="${movie.poster || 'https://via.placeholder.com/300x450'}" 
+                             alt="${movie.title}" 
+                             class="w-full h-72 object-cover transition duration-300">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            <button class="bg-red-600 p-3 rounded-full">▶️</button>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h4 class="font-bold truncate text-sm md:text-base">${movie.title}</h4>
+                        <p class="text-gray-500 text-xs">${movie.year || 'N/A'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        fetchMovies();
+    </script>
+</body>
+</html>
